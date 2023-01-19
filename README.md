@@ -1,0 +1,1 @@
+This is a package to help extract BattleScribe cat files into tabular tsvs

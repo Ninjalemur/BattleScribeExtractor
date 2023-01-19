@@ -6,6 +6,8 @@ authors = ["Ninjalemur <ninjalemur33@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
+pytest = "^7.2.1"
+pandas = "^1.5.2"
 
 [tool.poetry.dev-dependencies]
 
