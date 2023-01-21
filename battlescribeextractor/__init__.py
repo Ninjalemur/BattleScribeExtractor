@@ -1,3 +1,4 @@
 __version__ = '0.1.0'
 
-from .model_extractor import ModelExtractor
+
+from .extractors import ModelExtractor
