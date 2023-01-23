@@ -11,7 +11,7 @@ def main():
     tree = ET.parse(source_file)
     root = tree.getroot()
 
-    x = bse.ModelExtractor(root)
+    x = bse.WeaponExtractor(root)
     stats = x.extract()
     print(stats)
     pass
