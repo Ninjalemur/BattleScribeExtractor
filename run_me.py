@@ -17,9 +17,8 @@ def main():
 
     source_folder= sys.argv[1]
     print("Source Folder: {source_folder}".format(source_folder=source_folder))
+    bse.FolderExtractor(source_folder)
 
-    # tree = ET.parse(source_file)
-    # root = tree.getroot()
     pass
 
 if __name__ == "__main__":

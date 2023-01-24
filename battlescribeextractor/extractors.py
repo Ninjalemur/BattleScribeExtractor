@@ -1,20 +1,58 @@
 import pandas as pd
 import xml.etree.ElementTree as ET
+import os
 
 def FolderExtractor(
-    folder,
-    outputfile="./output.tsv"
+    input_folder,
+    model_outputfile="./model_data.tsv",
+    weapon_outputfile="./weapon_data.tsv",
+    verbose = True
     ):
     """
-    Extracts Model and Weapon data from BattleScribe .cat files in a folder and writes them to an output file
+    Extracts Model and Weapon data from BattleScribe .cat files in a folder and writes them to an output files
     
     Parameters:
         folder : folder path
             path to folder containing BattleScribe .cat files
-        outputfile : file path
-            path of desired output file
+        model_outputfile : file path
+            path of desired model output file
+        weapon_outputfile : file path
+            path of desired weapon output file
     """
-    pass
+    #check if input is a folder
+    if not os.path.isdir(input_folder):
+        raise TypeError("Only folder inputs are allowed")
+
+    
+    for (root,dirs,files) in os.walk(input_folder):
+        for file in files:
+            if file.lower().endswith(('.cat')):
+                if verbose:
+                    print("processing file: {root}\{file}".format(root=root,file=file))
+                catalogue_name = file[:-4]
+                model_data, weapon_data = FileExtractor(root+"/"+file)
+                # model_data['catalogue_name'] = catalogue_name
+                # weapon_data['catalogue_name'] = catalogue_name
+                model_data.insert(loc=0,column ="catalogue_name",value = len(model_data.axes[0])*[catalogue_name])
+                weapon_data.insert(loc=0,column ="catalogue_name",value = len(weapon_data.axes[0])*[catalogue_name])
+                try:
+                    cumulative_model_data
+                except NameError:
+                    cumulative_model_data = model_data
+                else:
+                    cumulative_model_data = pd.concat([cumulative_model_data,model_data])
+                try:
+                    cumulative_weapon_data
+                except NameError:
+                    cumulative_weapon_data = weapon_data
+                else:
+                    cumulative_weapon_data = pd.concat([cumulative_weapon_data,weapon_data])
+            else:
+                continue
+    
+    cumulative_model_data.to_csv(model_outputfile,sep="\t",index=False)
+    cumulative_weapon_data.to_csv(weapon_outputfile,sep="\t",index=False)
+
 
 def FileExtractor(
     input_file
