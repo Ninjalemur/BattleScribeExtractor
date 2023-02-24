@@ -100,11 +100,11 @@ def ModelExtractor(
 
 def ModelExtractorSharedProfile(
     root_element,
-    profile_stats_to_get = ["M","WS","BS","S","T","W","A","Ld","Save","pts"],
+    profile_stats_to_get = ["name","M","WS","BS","S","T","W","A","Ld","Save"],
     nullValue = ""
     ):
     """
-    Extracts model data from ShareProfles section of an XML Elements object and returns it as a DataFrame
+    Extracts model data from SharedProfiles section of an XML Elements object and returns it as a DataFrame
 
     Parameters:
         root_element : xml root object
@@ -144,7 +144,7 @@ def ModelExtractorSharedProfile(
 
 def WeaponExtractor(
     root_element,
-    profile_stats_to_get = ["Range","Type","S","AP","D","Abilities","pts"],
+    profile_stats_to_get = ["Range","Type","S","AP","D","Abilities"],
     nullValue = ""
     ):
     """
@@ -158,88 +158,43 @@ def WeaponExtractor(
         nullValue : any
             value to use if value for characteristic is not found
     """
-    pass
-
-def WeaponExtractorSharedProfile(
-    root_element,
-    profile_stats_to_get = ["Range","Type","S","AP","D","Abilities","pts"],
-    nullValue = ""
-    ):
-    """
-    Extracts weapon data from SharedProfiles section of an XML Elements object and returns it as a DataFrame
-
-    Parameters:
-        root_element : xml root object
-            xml root object from etree
-        profile_stats_to_get : list
-            list of stats other than name to get from sharedProfiles > profile > characteristics
-        nullValue : any
-            value to use if value for characteristic is not found
-    """
     collated_profile_stats =[]
-    for sharedProfile in root_element.iter('{http://www.battlescribe.net/schema/catalogueSchema}sharedProfiles'):
-        for profile in sharedProfile.iter('{http://www.battlescribe.net/schema/catalogueSchema}profile'):
-                if profile.attrib["typeName"] == "Weapon":
-                    profile_stats = {}
-                    unitName = profile.attrib["name"]
-                    profile_stats['name']= unitName
+    for profile in root_element.findall(".//*[@typeName='Weapon']"):
+        profile_stats = {}
+        profile_stats['name']= profile.attrib["name"]
 
-                    recorded_stats = {}
-                    for characteristics in profile.iter('{http://www.battlescribe.net/schema/catalogueSchema}characteristics'):
-                        for characteristic in profile.iter('{http://www.battlescribe.net/schema/catalogueSchema}characteristic'):
-                            characteristicName = characteristic.attrib["name"]
-                            characteristicValue = characteristic.text
-                            recorded_stats[characteristicName] =  characteristicValue
-                    for stat in profile_stats_to_get:
-                        try:
-                            profile_stats[stat] = recorded_stats[stat]
-                        except KeyError:
-                            profile_stats[stat] = nullValue
-                    collated_profile_stats.append(profile_stats)
-    return(pd.DataFrame.from_records(collated_profile_stats))
-
-def WeaponExtractorSharedSelectionEntry(
-    root_element,
-    profile_stats_to_get = ["Range","Type","S","AP","D","Abilities","pts"],
-    nullValue = ""
-    ):
-    """
-    Extracts weapon data from SharedProfiles section of an XML Elements object and returns it as a DataFrame
-
-    Parameters:
-        root_element : xml root object
-            xml root object from etree
-        profile_stats_to_get : list
-            list of stats other than name to get from sharedProfiles > profile > characteristics
-        nullValue : any
-            value to use if value for characteristic is not found
-    """
-    collated_profile_stats =[]
-    for sharedSelectionEntry in root_element.iter('{http://www.battlescribe.net/schema/catalogueSchema}sharedSelectionEntries'):
-        for profiles in sharedSelectionEntry.iter('{http://www.battlescribe.net/schema/catalogueSchema}profiles'):
-            for profile in profiles.iter('{http://www.battlescribe.net/schema/catalogueSchema}profile'):
-                    if profile.attrib["typeName"] == "Weapon":
-                        profile_stats = {}
-                        unitName = profile.attrib["name"]
-                        profile_stats['name']= unitName
-
-                        recorded_stats = {}
-                        for characteristics in profile.iter('{http://www.battlescribe.net/schema/catalogueSchema}characteristics'):
-                            for characteristic in profile.iter('{http://www.battlescribe.net/schema/catalogueSchema}characteristic'):
-                                characteristicName = characteristic.attrib["name"]
-                                characteristicValue = characteristic.text
-                                recorded_stats[characteristicName] =  characteristicValue
-        for costs in sharedSelectionEntry.iter('{http://www.battlescribe.net/schema/catalogueSchema}costs'):
-            for cost in costs.iter('{http://www.battlescribe.net/schema/catalogueSchema}cost'):
-                costName = cost.attrib["name"]
-                costValue = cost.attrib["value"]
-                recorded_stats[costName] =  costValue
+        recorded_stats = {}
+        for characteristics in profile.iter('{http://www.battlescribe.net/schema/catalogueSchema}characteristics'):
+            for characteristic in profile.iter('{http://www.battlescribe.net/schema/catalogueSchema}characteristic'):
+                characteristicName = characteristic.attrib["name"]
+                characteristicValue = characteristic.text
+                recorded_stats[characteristicName] =  characteristicValue
         for stat in profile_stats_to_get:
             try:
                 profile_stats[stat] = recorded_stats[stat]
             except KeyError:
                 profile_stats[stat] = nullValue
         collated_profile_stats.append(profile_stats)
+    # collated_profile_stats =[]
+    # for sharedProfile in root_element.iter('{http://www.battlescribe.net/schema/catalogueSchema}sharedProfiles'):
+    #     for profile in sharedProfile.iter('{http://www.battlescribe.net/schema/catalogueSchema}profile'):
+    #             if profile.attrib["typeName"] == "Weapon":
+    #                 profile_stats = {}
+    #                 unitName = profile.attrib["name"]
+    #                 profile_stats['name']= unitName
+
+    #                 recorded_stats = {}
+    #                 for characteristics in profile.iter('{http://www.battlescribe.net/schema/catalogueSchema}characteristics'):
+    #                     for characteristic in profile.iter('{http://www.battlescribe.net/schema/catalogueSchema}characteristic'):
+    #                         characteristicName = characteristic.attrib["name"]
+    #                         characteristicValue = characteristic.text
+    #                         recorded_stats[characteristicName] =  characteristicValue
+    #                 for stat in profile_stats_to_get:
+    #                     try:
+    #                         profile_stats[stat] = recorded_stats[stat]
+    #                     except KeyError:
+    #                         profile_stats[stat] = nullValue
+    #                 collated_profile_stats.append(profile_stats)
     return(pd.DataFrame.from_records(collated_profile_stats))
 
 

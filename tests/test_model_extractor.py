@@ -60,7 +60,7 @@ def test_ModelExtractorSharedProfile():
     received_output = bse.ModelExtractorSharedProfile(root)
     pd.testing.assert_frame_equal(expected_output,received_output)
 
-def test_WeaponExtractorSharedProfile():
+def test_WeaponExtractor():
     """
     Test that WeaponExtractor correctly extracts Weapon data from root element
 
@@ -103,54 +103,36 @@ def test_WeaponExtractorSharedProfile():
                 </characteristics>
                 </profile>
             </sharedProfiles>
-        </catalogue>
-        """
-    expected_output = pd.DataFrame.from_records(
-        [
-            {"name":"Nemesis Falchion","Range":"Melee","Type":"Melee","S":"User","AP":"-2","D":"1","Abilities":"Each time the bearer fights, if it is equipped with one or more Nemesis flachions, it makes 1 additional attack using this profile","pts":""},
-            {"name":"Psilencer","Range":"24\"","Type":"Heavy 6","S":"4","AP":"-1","D":"1","Abilities":"-","pts":""}            
-        ]
-    )
-    root = ET.fromstring(test_xml)
-    received_output = bse.WeaponExtractorSharedProfile(root)
-    pd.testing.assert_frame_equal(expected_output,received_output)
-
-def test_WeaponExtractorSharedSelectionEntry():
-    """
-    Test that WeaponExtractor correctly extracts Weapon data from root element
-
-    Ensures that sharedSelectionEntries > profile > characteristics path is extracted, but not others
-    """
-    test_xml = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-        <catalogue id="0cc2-3545-6762-a3f7" name="Imperium - Grey Knights" revision="116" battleScribeVersion="2.03" authorName="BSData Developers" authorContact="@Tekton" authorUrl="https://www.bsdata.net/contact" library="false" gameSystemId="28ec-711c-d87f-3aeb" gameSystemRevision="238" xmlns="http://www.battlescribe.net/schema/catalogueSchema">
-            <sharedSelectionEntries>
-                <selectionEntry id="c97e-2928-fc16-ddc3" name="Dreadfist" hidden="false" collective="false" import="true" type="upgrade">
+            <something>
+                <selectionEntry id="9a96-abac-13ca-513d" name="Thunderhawk heavy cannon" hidden="false" collective="false" import="true" type="upgrade">
                     <profiles>
-                        <profile id="70dc-ea63-61e4-f38a" name="Dreadfist" hidden="false" typeId="d5f97c0b-9fc9-478d-aa34-a7c414d3ea48" typeName="Weapon">
-                        <characteristics>
-                            <characteristic name="Range" typeId="6fa97fa8-ea74-4a27-a0fb-bc4e5f367464">Melee</characteristic>
-                            <characteristic name="Type" typeId="077c342f-d7b9-45c6-b8af-88e97cafd3a2">Melee</characteristic>
-                            <characteristic name="S" typeId="59b1-319e-ec13-d466">x2</characteristic>
-                            <characteristic name="AP" typeId="75aa-a838-b675-6484">-3</characteristic>
-                            <characteristic name="D" typeId="ae8a-3137-d65b-4ca7">2</characteristic>
-                            <characteristic name="Abilities" typeId="837d-5e63-aeb7-1410">-</characteristic>
-                        </characteristics>
+                        <profile id="c03a-36d6-e74a-4e93" name="Thunderhawk heavy cannon" hidden="false" typeId="d5f97c0b-9fc9-478d-aa34-a7c414d3ea48" typeName="Weapon">
+                            <characteristics>
+                                <characteristic name="Range" typeId="6fa97fa8-ea74-4a27-a0fb-bc4e5f367464">48&quot;</characteristic>
+                                <characteristic name="Type" typeId="077c342f-d7b9-45c6-b8af-88e97cafd3a2">Heavy 2D6</characteristic>
+                                <characteristic name="S" typeId="59b1-319e-ec13-d466">8</characteristic>
+                                <characteristic name="AP" typeId="75aa-a838-b675-6484">-2</characteristic>
+                                <characteristic name="D" typeId="ae8a-3137-d65b-4ca7">D3+2</characteristic>
+                                <characteristic name="Abilities" typeId="837d-5e63-aeb7-1410">Blast</characteristic>
+                            </characteristics>
                         </profile>
                     </profiles>
                     <costs>
                         <cost name=" PL" typeId="e356-c769-5920-6e14" value="0.0"/>
-                        <cost name="CP" typeId="2d3b-b544-ad49-fb75" value="0.0"/>
                         <cost name="pts" typeId="points" value="0.0"/>
+                        <cost name="CP" typeId="2d3b-b544-ad49-fb75" value="0.0"/>
                     </costs>
                 </selectionEntry>
-            </sharedSelectionEntries>
+            </something>
         </catalogue>
         """
     expected_output = pd.DataFrame.from_records(
         [
-            {"name":"Dreadfist","Range":"Melee","Type":"Melee","S":"x2","AP":"-3","D":"2","Abilities":"-","pts":"0.0"}            
+            {"name":"Nemesis Falchion","Range":"Melee","Type":"Melee","S":"User","AP":"-2","D":"1","Abilities":"Each time the bearer fights, if it is equipped with one or more Nemesis flachions, it makes 1 additional attack using this profile"},
+            {"name":"Psilencer","Range":"24\"","Type":"Heavy 6","S":"4","AP":"-1","D":"1","Abilities":"-"},
+            {"name":"Thunderhawk heavy cannon","Range":"48\"","Type":"Heavy 2D6","S":"8","AP":"-2","D":"D3+2","Abilities":"Blast"}        
         ]
     )
     root = ET.fromstring(test_xml)
-    received_output = bse.WeaponExtractorSharedSelectionEntry(root)
+    received_output = bse.WeaponExtractor(root)
     pd.testing.assert_frame_equal(expected_output,received_output)
