@@ -7,8 +7,8 @@ import xml.etree.ElementTree as ET
 
 
 def main():
-    source_file = sys.argv[1]
-    print("Source File: {source_file}".format(source_file=source_file))
+    # source_file = sys.argv[1]
+    # print("Source File: {source_file}".format(source_file=source_file))
 
     # model_data, weapon_data = bse.FileExtractor(source_file)
     # print("model data: ")
@@ -16,9 +16,9 @@ def main():
     # print("weapon data: ")
     # print(weapon_data)
 
-    # source_folder= sys.argv[1]
-    # print("Source Folder: {source_folder}".format(source_folder=source_folder))
-    # bse.FolderExtractor(source_folder)
+    source_folder= sys.argv[1]
+    print("Source Folder: {source_folder}".format(source_folder=source_folder))
+    bse.FolderExtractor(source_folder)
 
     test_xml = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
         <catalogue id="0cc2-3545-6762-a3f7" name="Imperium - Grey Knights" revision="116" battleScribeVersion="2.03" authorName="BSData Developers" authorContact="@Tekton" authorUrl="https://www.bsdata.net/contact" library="false" gameSystemId="28ec-711c-d87f-3aeb" gameSystemRevision="238" xmlns="http://www.battlescribe.net/schema/catalogueSchema">
@@ -45,17 +45,17 @@ def main():
             </sharedSelectionEntries>
         </catalogue>
         """
-    expected_output = pd.DataFrame.from_records(
-        [
-            {"name":"Dreadfist","Range":"Melee","Type":"Melee","S":"x2","AP":"-3","D":"2","Abilities":"-","pts":"0.0"}            
-        ]
-    )
-    # root = ET.fromstring(test_xml)
-    # received_output = bse.WeaponExtractorSharedSelectionEntry(root)
-    tree = ET.parse(source_file)
-    root = tree.getroot()
-    received_output = bse.WeaponExtractor(root)
-    print(received_output)
+    # expected_output = pd.DataFrame.from_records(
+    #     [
+    #         {"name":"Dreadfist","Range":"Melee","Type":"Melee","S":"x2","AP":"-3","D":"2","Abilities":"-","pts":"0.0"}            
+    #     ]
+    # )
+    # # root = ET.fromstring(test_xml)
+    # # received_output = bse.WeaponExtractorSharedSelectionEntry(root)
+    # tree = ET.parse(source_file)
+    # root = tree.getroot()
+    # received_output = bse.WeaponExtractor(root)
+    # print(received_output)
 
     pass
 

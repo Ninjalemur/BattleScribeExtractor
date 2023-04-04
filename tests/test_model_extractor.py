@@ -57,7 +57,8 @@ def test_ModelExtractorSharedProfile():
         ]
     )
     root = ET.fromstring(test_xml)
-    received_output = bse.ModelExtractorSharedProfile(root)
+    schema = '{http://www.battlescribe.net/schema/catalogueSchema}'
+    received_output = bse.ModelExtractorSharedProfile(root,schema)
     pd.testing.assert_frame_equal(expected_output,received_output)
 
 def test_WeaponExtractor():
@@ -134,5 +135,6 @@ def test_WeaponExtractor():
         ]
     )
     root = ET.fromstring(test_xml)
-    received_output = bse.WeaponExtractor(root)
+    schema = '{http://www.battlescribe.net/schema/catalogueSchema}'
+    received_output = bse.WeaponExtractor(root,schema)
     pd.testing.assert_frame_equal(expected_output,received_output)
