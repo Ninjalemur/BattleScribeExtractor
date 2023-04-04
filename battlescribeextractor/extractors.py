@@ -79,14 +79,13 @@ def FileExtractor(
     tree = ET.parse(input_file)
     root = tree.getroot()
 
-    model_data = ModelExtractor(root,schema)
-    weapon_data = WeaponExtractor(root,schema)
+    model_data = ModelExtractor(root)
+    weapon_data = WeaponExtractor(root)
 
     return(model_data, weapon_data)
 
 def ModelExtractor(
     root_element,
-    schema,
     profile_stats_to_get = ["M","WS","BS","S","T","W","A","Ld","Save","pts"],
     nullValue = ""
     ):
@@ -96,8 +95,6 @@ def ModelExtractor(
     Parameters:
         root_element : xml root object
             xml root object from etree
-        schema : string
-            schema of file
         profile_stats_to_get : list
             list of stats other than name to get from sharedProfiles > profile > characteristics
         nullValue : any
@@ -130,7 +127,6 @@ def ModelExtractor(
 
 def ModelExtractorSharedProfile(
     root_element,
-    schema,
     profile_stats_to_get = ["name","M","WS","BS","S","T","W","A","Ld","Save"],
     nullValue = ""
     ):
@@ -140,8 +136,6 @@ def ModelExtractorSharedProfile(
     Parameters:
         root_element : xml root object
             xml root object from etree
-        schema : string
-            schema of file
         profile_stats_to_get : list
             list of stats other than name to get from sharedProfiles > profile > characteristics
         nullValue : any
@@ -177,7 +171,6 @@ def ModelExtractorSharedProfile(
 
 def WeaponExtractor(
     root_element,
-    schema,
     profile_stats_to_get = ["Range","Type","S","AP","D","Abilities"],
     nullValue = ""
     ):
@@ -187,13 +180,13 @@ def WeaponExtractor(
     Parameters:
         root_element : xml root object
             xml root object from etree
-        schema : string
-            schema of file
         profile_stats_to_get : list
             list of stats other than name to get from sharedProfiles > profile > characteristics
         nullValue : any
             value to use if value for characteristic is not found
     """
+    schema = root_element.tag.split("}")[0]+"}"
+
     collated_profile_stats =[]
     for profile in root_element.findall(".//*[@typeName='Weapon']"):
         profile_stats = {}
