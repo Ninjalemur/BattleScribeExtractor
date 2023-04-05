@@ -188,7 +188,7 @@ def WeaponExtractor(
         nullValue : any
             value to use if value for characteristic is not found
     """
-    schema = root_element.tag.split("}")[0]+"}"
+    namespace = root_element.tag.split("}")[0]+"}"
 
     collated_profile_stats =[]
     for profile in root_element.findall(".//*[@typeName='Weapon']"):
@@ -196,8 +196,8 @@ def WeaponExtractor(
         profile_stats['name']= profile.attrib["name"]
 
         recorded_stats = {}
-        for characteristics in profile.iter(schema+'characteristics'):
-            for characteristic in characteristics.iter(schema+'characteristic'):
+        for characteristics in profile.iter(namespace+'characteristics'):
+            for characteristic in characteristics.iter(namespace+'characteristic'):
                 characteristicName = characteristic.attrib["name"]
                 characteristicValue = characteristic.text
                 recorded_stats[characteristicName] =  characteristicValue
