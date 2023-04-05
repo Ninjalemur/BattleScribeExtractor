@@ -57,7 +57,7 @@ def test_ModelExtractorSharedProfile():
         ]
     )
     root = ET.fromstring(test_xml)
-    received_output = bse.ModelExtractorSharedProfile(root)
+    received_output = bse.ModelExtractor(root)
     pd.testing.assert_frame_equal(expected_output,received_output)
 
 def test_WeaponExtractor():

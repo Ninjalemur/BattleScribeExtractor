@@ -54,7 +54,10 @@ def FolderExtractor(
             else:
                 continue
     
+    cumulative_model_data.drop_duplicates(subset='name',keep='first',inplace=True)
     cumulative_model_data.to_csv(model_outputfile,sep="\t",index=False)
+
+    cumulative_weapon_data.drop_duplicates(subset='name',keep='first',inplace=True)
     cumulative_weapon_data.to_csv(weapon_outputfile,sep="\t",index=False)
 
 
