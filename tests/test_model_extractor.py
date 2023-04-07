@@ -2,7 +2,7 @@ import battlescribeextractor as bse
 import pandas as pd
 import xml.etree.ElementTree as ET
 
-def test_ModelExtractorSharedProfile():
+def test_ModelExtractor():
     """
     Test that ModelExtractor correctly extracts Model data from root element
 
@@ -59,6 +59,89 @@ def test_ModelExtractorSharedProfile():
     root = ET.fromstring(test_xml)
     received_output = bse.ModelExtractor(root)
     pd.testing.assert_frame_equal(expected_output,received_output)
+
+def test_ModelRecurseCrawler():
+    """
+    Test that ModelRecurseCrawler correctly recurses selectionEntryGroups to extract selectionEntries. Depends on ProfileExtractor functioning correctly.
+    """
+    test_xml = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        <catalogue id="0cc2-3545-6762-a3f7" name="Imperium - Grey Knights" revision="116" battleScribeVersion="2.03" authorName="BSData Developers" authorContact="@Tekton" authorUrl="https://www.bsdata.net/contact" library="false" gameSystemId="28ec-711c-d87f-3aeb" gameSystemRevision="238" xmlns="http://www.battlescribe.net/schema/catalogueSchema">
+            <sharedProfiles>
+                <profile id="f204-dc7f-aacf-e947" name="Grey Knight Terminator" hidden="false" typeId="800f-21d0-4387-c943" typeName="Unit">
+                    <characteristics>
+                        <characteristic name="M" typeId="0bdf-a96e-9e38-7779">5&quot;</characteristic>
+                        <characteristic name="WS" typeId="e7f0-1278-0250-df0c">3+</characteristic>
+                        <characteristic name="BS" typeId="381b-eb28-74c3-df5f">3+</characteristic>
+                        <characteristic name="S" typeId="2218-aa3c-265f-2939">4</characteristic>
+                        <characteristic name="T" typeId="9c9f-9774-a358-3a39">4</characteristic>
+                        <characteristic name="W" typeId="f330-5e6e-4110-0978">3</characteristic>
+                        <characteristic name="A" typeId="13fc-b29b-31f2-ab9f">3</characteristic>
+                        <characteristic name="Ld" typeId="00ca-f8b8-876d-b705">7</characteristic>
+                        <characteristic name="Save" typeId="c0df-df94-abd7-e8d3">2+</characteristic>
+                    </characteristics>
+                </profile>
+            </sharedProfiles>
+        </catalogue>
+    """
+    expected_output = pd.DataFrame.from_records(
+        [
+            {"name":"Grey Knight (Falchions)","M":"6\"","WS":"3+","BS":"3+","S":"4","T":"4","W":"2","A":"3","Ld":"7","Save":"3+","pts":"20"},
+            {"name":"Grey Knight (Daemon Hammer)","M":"6\"","WS":"3+","BS":"3+","S":"4","T":"4","W":"2","A":"3","Ld":"7","Save":"3+","pts":"20"},
+            {"name":"Grey Knight (Halberd)","M":"6\"","WS":"3+","BS":"3+","S":"4","T":"4","W":"2","A":"3","Ld":"7","Save":"3+","pts":"20"},
+            {"name":"Grey Knight (Sword)","M":"6\"","WS":"3+","BS":"3+","S":"4","T":"4","W":"2","A":"3","Ld":"7","Save":"3+","pts":"20"},
+            {"name":"Grey Knight (Warding Stave)","M":"6\"","WS":"3+","BS":"3+","S":"4","T":"4","W":"2","A":"3","Ld":"7","Save":"3+","pts":"20"},
+            {"name":"Grey Knight (Incinerator)","M":"6\"","WS":"3+","BS":"3+","S":"4","T":"4","W":"2","A":"3","Ld":"7","Save":"3+","pts":"20"},
+            {"name":"Grey Knight (Psycannon)","M":"6\"","WS":"3+","BS":"3+","S":"4","T":"4","W":"2","A":"3","Ld":"7","Save":"3+","pts":"20"},
+            {"name":"Grey Knight (Psilencer)","M":"6\"","WS":"3+","BS":"3+","S":"4","T":"4","W":"2","A":"3","Ld":"7","Save":"3+","pts":"20"},
+            {"name":"Grey Knight Justicar","M":"6\"","WS":"3+","BS":"3+","S":"4","T":"4","W":"2","A":"4","Ld":"7","Save":"3+","pts":"20"}
+        ]
+    )
+    root = ET.fromstring(test_xml)
+    namespace = root.tag.split("}")[0]+"}"
+    profile = root.find(namespace+'sharedProfiles').find(namespace+'profile')
+    received_output = bse.ProfileExtractor(profile,namespace)
+    assert set(expected_output) == set(received_output)
+
+def test_ProfileExtractor():
+    """
+    Test that Profile is extracted correctly from profile element
+    """
+    test_xml = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        <catalogue id="0cc2-3545-6762-a3f7" name="Imperium - Grey Knights" revision="116" battleScribeVersion="2.03" authorName="BSData Developers" authorContact="@Tekton" authorUrl="https://www.bsdata.net/contact" library="false" gameSystemId="28ec-711c-d87f-3aeb" gameSystemRevision="238" xmlns="http://www.battlescribe.net/schema/catalogueSchema">
+            <sharedProfiles>
+                <profile id="f204-dc7f-aacf-e947" name="Grey Knight Terminator" hidden="false" typeId="800f-21d0-4387-c943" typeName="Unit">
+                    <characteristics>
+                        <characteristic name="M" typeId="0bdf-a96e-9e38-7779">5&quot;</characteristic>
+                        <characteristic name="WS" typeId="e7f0-1278-0250-df0c">3+</characteristic>
+                        <characteristic name="BS" typeId="381b-eb28-74c3-df5f">3+</characteristic>
+                        <characteristic name="S" typeId="2218-aa3c-265f-2939">4</characteristic>
+                        <characteristic name="T" typeId="9c9f-9774-a358-3a39">4</characteristic>
+                        <characteristic name="W" typeId="f330-5e6e-4110-0978">3</characteristic>
+                        <characteristic name="A" typeId="13fc-b29b-31f2-ab9f">3</characteristic>
+                        <characteristic name="Ld" typeId="00ca-f8b8-876d-b705">7</characteristic>
+                        <characteristic name="Save" typeId="c0df-df94-abd7-e8d3">2+</characteristic>
+                    </characteristics>
+                </profile>
+            </sharedProfiles>
+        </catalogue>
+    """
+    expected_output = {
+        "name":"Grey Knight Terminator",
+        "M":"5\"",
+        "WS":"3+",
+        "BS":"3+",
+        "S":"4",
+        "T":"4",
+        "W":"3",
+        "A":"3",
+        "Ld":"7",
+        "Save":"2+"
+        }
+    root = ET.fromstring(test_xml)
+    namespace = root.tag.split("}")[0]+"}"
+    profile = root.find(namespace+'sharedProfiles').find(namespace+'profile')
+    received_output = bse.ProfileExtractor(profile,namespace)
+    assert expected_output == received_output
 
 def test_WeaponExtractor():
     """
