@@ -62,8 +62,7 @@ def FolderExtractor(
 
 
 def FileExtractor(
-    input_file,
-    schema
+    input_file
     ):
     """
     Extracts Model and Weapon data from BattleScribe .cat file returns model and weapon data
@@ -71,8 +70,6 @@ def FileExtractor(
     Parameters:
         input_file : file path
             path to BattleScribe .cat file
-        schema : string
-            schema of file
     Returns
         model_data : DataFrame
             dataframe containing model data
