@@ -94,7 +94,7 @@ def ModelExtractor(
     nullValue = ""
     ):
     """
-    Extracts model data from an XML Elements object and returns it as a DataFrame
+    Extracts model data from an XML Elements object and returns it as a DataFrame. Iterates over entryLinks in root element and calls SelectionEntryUnitExtractor to extract data from selectionEntries referenced by each entryLink.
 
     Parameters:
         root_element : xml root object
@@ -111,45 +111,36 @@ def ModelExtractor(
     """
     namespace = root_element.tag.split("}")[0]+"}"
 
+    
     collated_profile_stats =[]
     for entryLinks in root_element.iter(namespace+'entryLinks'):
         for entryLink in entryLinks.iter(namespace+'entryLink'):
-            print(entryLink)
-            print("entry link name: "+entryLink.attrib["name"])
             target_id = entryLink.attrib["targetId"]
-            ref = root_element.findall(".//*[@id='{target_id}']".format(target_id = target_id))
-        # for profile in entryLink.iter(namespace+'profile'):
-                # if profile.attrib["typeName"] == "Unit":
-                #     profile_stats = {}
-                #     unitName = profile.attrib["name"]
-                #     profile_stats['name']= unitName
-
-                #     recorded_stats = {}
-                #     for characteristics in profile.iter(namespace+'characteristics'):
-                #         for characteristic in characteristics.iter(namespace+'characteristic'):
-                #             characteristicName = characteristic.attrib["name"]
-                #             characteristicValue = characteristic.text
-                #             recorded_stats[characteristicName] =  characteristicValue
-                #     for stat in profile_stats_to_get:
-                #         try:
-                #             profile_stats[stat] = recorded_stats[stat]
-                #         except KeyError:
-                #             profile_stats[stat] = nullValue
-                #     collated_profile_stats.append(profile_stats)
+            ref = root_element.find(".//*[@id='{target_id}']".format(target_id = target_id))
+            if ref == None:
+                continue
+            elif ref.attrib["type"] != "unit":
+                continue
+            else:
+                collated_profile_stats += SelectionEntryUnitExtractor(ref,namespace,root_element,profile_stats_to_get,points_string,nullValue)
     return(pd.DataFrame.from_records(collated_profile_stats))
 
-def ModelRecurseCrawler(
+def SelectionEntryUnitExtractor(
+    current_element,
+    namespace,
     root_element,
     profile_stats_to_get = ["M","WS","BS","S","T","W","A","Ld","Save"],
     points_string = "pts",
     nullValue = ""
     ):
     """
-    Function to recursively crawl xml through various selectionEntryGroups to get to selectionEntries. Within selectionEntries, it will get profile stats from profiles first, then infoLinks 
+    Iterates over all model selectionEntries in a unit selectionEntry. Calls SelectionEntryExtractor to extract data from model selectionEntries.
 
     Parameters:
         root_element : xml root object
             xml root object from etree
+        namespace : string  
+            namespace of xml file
         profile_stats_to_get : list
             list of stats other than name to get from sharedProfiles > profile > characteristics
         points_string : string
@@ -157,10 +148,82 @@ def ModelRecurseCrawler(
         nullValue : any
             value to use if value for characteristic is not found
     Returns:
-        DataFrame
-            dataframe that contains name and stats from profile_stats_to_get
+        List
+            list of profile dictionaries
     """
-    return(None)
+    collated_profile_stats = []
+    for selectionEntry in current_element.findall(".//*[@type='model']"):
+        profile_stats = SelectionEntryModelExtractor(
+            selectionEntry,
+            namespace,
+            root_element,
+            profile_stats_to_get,
+            points_string,
+            nullValue)
+        if profile_stats == None:
+            continue
+        else:
+            collated_profile_stats.append(profile_stats)
+    for entryLink in current_element.find(namespace+"entryLinks").findall(namespace+"entryLink"):
+        target_id = entryLink.attrib["targetId"]
+        ref = root_element.findall(".//*[@id='{target_id}']".format(target_id = target_id))
+        for selectionEntry in ref:
+            profile_stats = SelectionEntryModelExtractor(
+                selectionEntry,
+                namespace,
+                root_element,
+                profile_stats_to_get,
+                points_string,
+                nullValue)
+            if profile_stats == None:
+                continue
+            else:
+                collated_profile_stats.append(profile_stats)
+    return(collated_profile_stats)
+
+def SelectionEntryModelExtractor(
+    selectionEntry,
+    namespace,
+    root,
+    profile_stats_to_get = ["M","WS","BS","S","T","W","A","Ld","Save"],
+    points_string = "pts",
+    nullValue = ""
+    ):
+    """
+    Extracts profile data from a model selectionEntry object and returns it as a dictionary. Calls ProfileExtractor to extract profile. Extracts cost of model from selection entry
+
+    Parameters:
+        selectionEntry : xml selectionEntry object
+            xml selectionEntry object from etree
+        namespace : string  
+            namespace of xml file
+        root_element : xml root object
+            xml root object from etree
+        profile_stats_to_get : list
+            list of stats other than name to get from profile > characteristics. To be passed to ProfileExtractor
+        points_string : string
+            string used to denote points cost in xml file. Will also be used for dataframe header
+        nullValue : any
+            value to use if value for characteristic is not found. To be passed to ProfileExtractor
+    Returns:
+        Dict
+            dictionary that contains name and stats from profile_stats_to_get, as well as pts
+    """
+    points_cost = selectionEntry.find(namespace+"costs").find('.//*[@name="{points_string}"]'.format(points_string=points_string)).attrib["value"]
+    
+    # check profiles for profile first
+    try:
+        profile = selectionEntry.find(namespace+"profiles").find(namespace+"profile")
+    except AttributeError:
+        targetId = selectionEntry.find(namespace+"infoLinks").find(namespace+"infoLink").attrib["targetId"]
+        profile = root.find(".//*[@id='{target_id}']".format(target_id = targetId))
+    if profile == None:
+        return(None)
+    model_name = selectionEntry.attrib["name"]
+    profile_stats = ProfileExtractor(profile,namespace)
+    profile_stats["name"] = model_name
+    profile_stats[points_string] = points_cost
+    return(profile_stats)
 
 def ProfileExtractor(
     profile,
@@ -169,7 +232,7 @@ def ProfileExtractor(
     nullValue = ""
     ):
     """
-    Extracts profile data from an XML Elements object and returns it as a dictionary
+    Extracts profile data from a profile XML Elements object and returns it as a dictionary
 
     Parameters:
         profile : xml profile object
