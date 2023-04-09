@@ -29,14 +29,8 @@ def FolderExtractor(
             if file.lower().endswith(('.cat')) or file.lower().endswith(('.gst')):
                 if verbose:
                     print("processing file: {root}/{file}".format(root=root,file=file))
-                if file.lower().endswith(('.cat')):
-                    schema = '{http://www.battlescribe.net/schema/catalogueSchema}'
-                if file.lower().endswith(('.gst')):
-                    schema = '{http://www.battlescribe.net/schema/gameSystemSchema}'
                 catalogue_name = file[:-4]
-                model_data, weapon_data = FileExtractor(input_file=root+"/"+file, schema=schema)
-                # model_data['catalogue_name'] = catalogue_name
-                # weapon_data['catalogue_name'] = catalogue_name
+                model_data, weapon_data = FileExtractor(input_file=root+"/"+file)
                 model_data.insert(loc=0,column ="catalogue_name",value = len(model_data.axes[0])*[catalogue_name])
                 weapon_data.insert(loc=0,column ="catalogue_name",value = len(weapon_data.axes[0])*[catalogue_name])
                 try:
@@ -110,11 +104,14 @@ def ModelExtractor(
 
     
     collated_profile_stats =[]
-    for entryLinks in root_element.iter(namespace+'entryLinks'):
-        for entryLink in entryLinks.iter(namespace+'entryLink'):
+    for entryLinks in root_element.findall(namespace+'entryLinks'):
+        for entryLink in entryLinks.findall(namespace+'entryLink'):
+            # print("checking entryLink: "+entryLink.attrib["name"])
             target_id = entryLink.attrib["targetId"]
             ref = root_element.find(".//*[@id='{target_id}']".format(target_id = target_id))
             if ref == None:
+                continue
+            elif ref.attrib.get("type") == None:
                 continue
             elif ref.attrib["type"] != "unit":
                 continue
@@ -148,7 +145,20 @@ def SelectionEntryUnitExtractor(
         List
             list of profile dictionaries
     """
+    if current_element == None:
+        return(None)
     collated_profile_stats = []
+
+    selectionEntry_profile = SelectionEntryModelExtractor(
+                current_element,
+                namespace,
+                root_element,
+                profile_stats_to_get,
+                points_string,
+                nullValue)
+    if selectionEntry_profile != None:
+        collated_profile_stats.append(selectionEntry_profile)
+
     for selectionEntry in current_element.findall(".//*[@type='model']"):
         profile_stats = SelectionEntryModelExtractor(
             selectionEntry,
@@ -161,10 +171,16 @@ def SelectionEntryUnitExtractor(
             continue
         else:
             collated_profile_stats.append(profile_stats)
-    for entryLink in current_element.find(namespace+"entryLinks").findall(namespace+"entryLink"):
+    entryLinks = current_element.find(namespace+"entryLinks")
+    if entryLinks == None:
+        return(collated_profile_stats)
+    for entryLink in entryLinks.findall(namespace+"entryLink"):
+        # print("checking entryLink "+entryLink.attrib["name"])
         target_id = entryLink.attrib["targetId"]
         ref = root_element.findall(".//*[@id='{target_id}']".format(target_id = target_id))
         for selectionEntry in ref:
+            if selectionEntry == None:
+                continue
             profile_stats = SelectionEntryModelExtractor(
                 selectionEntry,
                 namespace,
@@ -172,6 +188,7 @@ def SelectionEntryUnitExtractor(
                 profile_stats_to_get,
                 points_string,
                 nullValue)
+            # print(profile_stats)
             if profile_stats == None:
                 continue
             else:
@@ -206,18 +223,31 @@ def SelectionEntryModelExtractor(
         Dict
             dictionary that contains name and stats from profile_stats_to_get, as well as pts
     """
-    points_cost = selectionEntry.find(namespace+"costs").find('.//*[@name="{points_string}"]'.format(points_string=points_string)).attrib["value"]
+    try:
+        points_cost = selectionEntry.find(namespace+"costs").find('.//*[@name="{points_string}"]'.format(points_string=points_string)).attrib["value"]
+    except AttributeError:
+        points_cost = "0.0"
     
     # check profiles for profile first
     try:
-        profile = selectionEntry.find(namespace+"profiles").find(namespace+"profile")
+        for profile in selectionEntry.find(namespace+"profiles").findall(namespace+"profile"):
+            if profile.attrib["typeName"] == "Unit":
+                break
     except AttributeError:
-        targetId = selectionEntry.find(namespace+"infoLinks").find(namespace+"infoLink").attrib["targetId"]
-        profile = root.find(".//*[@id='{target_id}']".format(target_id = targetId))
+        # print("no profiles profile found for "+selectionEntry.attrib["name"])
+        try:
+            targetId = selectionEntry.find(namespace+"infoLinks").find(namespace+"infoLink").attrib["targetId"]
+            profile = root.find(".//*[@id='{target_id}']".format(target_id = targetId))
+        except AttributeError:
+            # print("no info link profile found for "+selectionEntry.attrib["name"])
+            profile = None
     if profile == None:
         return(None)
     model_name = selectionEntry.attrib["name"]
+    # print("processing profile "+profile.attrib["name"])
     profile_stats = ProfileExtractor(profile,namespace)
+    if profile_stats == None:
+        return(None)
     profile_stats["name"] = model_name
     profile_stats[points_string] = points_cost
     return(profile_stats)
@@ -244,6 +274,10 @@ def ProfileExtractor(
         Dict
             dictionary that contains name and stats from profile_stats_to_get
     """
+    try:
+        profile.attrib["typeName"]
+    except KeyError:
+        return(None)
     if profile.attrib["typeName"] == "Unit":
         profile_stats = {}
         unitName = profile.attrib["name"]
