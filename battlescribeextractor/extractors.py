@@ -110,10 +110,12 @@ def ModelExtractor(
             target_id = entryLink.attrib["targetId"]
             ref = root_element.find(".//*[@id='{target_id}']".format(target_id = target_id))
             if ref == None:
+                # print("No reference found for entryLink: "+entryLink.attrib["name"])
                 continue
             elif ref.attrib.get("type") == None:
                 continue
-            elif ref.attrib["type"] != "unit":
+            elif ref.attrib["type"] != "unit" and ref.attrib["type"] != "model":
+                # print("entryLink: "+entryLink.attrib["name"]+" is neither a unit nor a model")
                 continue
             else:
                 collated_profile_stats += SelectionEntryUnitExtractor(ref,namespace,root_element,profile_stats_to_get,points_string,nullValue)
@@ -146,6 +148,7 @@ def SelectionEntryUnitExtractor(
             list of profile dictionaries
     """
     if current_element == None:
+        # print("current_element is None")
         return(None)
     collated_profile_stats = []
 
@@ -156,6 +159,10 @@ def SelectionEntryUnitExtractor(
                 profile_stats_to_get,
                 points_string,
                 nullValue)
+    print("initial selection extration")
+    print(selectionEntry_profile)
+    if selectionEntry_profile == None:
+        print("direct model extraction failed")
     if selectionEntry_profile != None:
         collated_profile_stats.append(selectionEntry_profile)
 
@@ -281,6 +288,7 @@ def ProfileExtractor(
     if profile.attrib["typeName"] == "Unit":
         profile_stats = {}
         unitName = profile.attrib["name"]
+        print("Model name: "+unitName)
         profile_stats['name']= unitName
 
         recorded_stats = {}
