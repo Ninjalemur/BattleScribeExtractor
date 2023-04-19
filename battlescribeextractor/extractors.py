@@ -235,24 +235,32 @@ def SelectionEntryModelExtractor(
     except AttributeError:
         points_cost = "0.0"
     
+    profile_stats = None
     # check profiles for profile first
     try:
         for profile in selectionEntry.find(namespace+"profiles").findall(namespace+"profile"):
             if profile.attrib["typeName"] == "Unit":
-                break
+                profile_stats = ProfileExtractor(profile,namespace)
+                if profile_stats["W"] == "N/A":
+                    continue
+                else:
+                    break
+        # print(" profile found for "+selectionEntry.attrib["name"])
     except AttributeError:
         # print("no profiles profile found for "+selectionEntry.attrib["name"])
         try:
             targetId = selectionEntry.find(namespace+"infoLinks").find(namespace+"infoLink").attrib["targetId"]
             profile = root.find(".//*[@id='{target_id}']".format(target_id = targetId))
+            profile_stats = ProfileExtractor(profile,namespace)
         except AttributeError:
             # print("no info link profile found for "+selectionEntry.attrib["name"])
             profile = None
+    # print("profile search for "+selectionEntry.attrib["name"]+" complete")
     if profile == None:
         return(None)
     model_name = selectionEntry.attrib["name"]
     # print("processing profile "+profile.attrib["name"])
-    profile_stats = ProfileExtractor(profile,namespace)
+    # profile_stats = ProfileExtractor(profile,namespace)
     if profile_stats == None:
         return(None)
     profile_stats["name"] = model_name

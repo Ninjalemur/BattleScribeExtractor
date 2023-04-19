@@ -1171,3 +1171,255 @@ def test_WeaponExtractor():
     root = ET.fromstring(test_xml)
     received_output = bse.WeaponExtractor(root)
     pd.testing.assert_frame_equal(expected_output,received_output)
+
+
+def test_SelectionEntryModelExtractor_DamageTrack():
+    """
+    Test that SelectionEntryModelExtractor extracts the highest damage track profile for units with damage tracks. Ignores profiles with "N/A" in wounds field. Requires ProfileExtractor to be working correctly.
+    """
+    test_xml = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        <catalogue id="0cc2-3545-6762-a3f7" name="Imperium - Grey Knights" revision="116" battleScribeVersion="2.03" authorName="BSData Developers" authorContact="@Tekton" authorUrl="https://www.bsdata.net/contact" library="false" gameSystemId="28ec-711c-d87f-3aeb" gameSystemRevision="238" xmlns="http://www.battlescribe.net/schema/catalogueSchema">
+            <sharedSelectionEntries>
+                <selectionEntry id="5a45-57d9-82b8-a715" name="Land Raider" hidden="false" collective="false" import="true" type="unit">
+                    <profiles>
+                        <profile id="2ffa-acf3-ea6c-9fce" name="Transport" hidden="false" typeId="b3a8-0452-7436-44d1" typeName="Transport">
+                        <characteristics>
+                            <characteristic name="Capacity" typeId="15aa-1916-a38b-d223">This model has a transport capacity of 10 Grey Knights Infantry models. Each Terminator model takes the space of 2 models.</characteristic>
+                        </characteristics>
+                        </profile>
+                        <profile id="df6e-b505-bddd-48cf" name="Land Raider (1-4 wounds)" hidden="false" typeId="800f-21d0-4387-c943" typeName="Unit">
+                        <characteristics>
+                            <characteristic name="M" typeId="0bdf-a96e-9e38-7779">3&quot;</characteristic>
+                            <characteristic name="WS" typeId="e7f0-1278-0250-df0c">6+</characteristic>
+                            <characteristic name="BS" typeId="381b-eb28-74c3-df5f">5+</characteristic>
+                            <characteristic name="S" typeId="2218-aa3c-265f-2939">8</characteristic>
+                            <characteristic name="T" typeId="9c9f-9774-a358-3a39">8</characteristic>
+                            <characteristic name="W" typeId="f330-5e6e-4110-0978">N/A</characteristic>
+                            <characteristic name="A" typeId="13fc-b29b-31f2-ab9f">D3</characteristic>
+                            <characteristic name="Ld" typeId="00ca-f8b8-876d-b705">9</characteristic>
+                            <characteristic name="Save" typeId="c0df-df94-abd7-e8d3">2+</characteristic>
+                        </characteristics>
+                        </profile>
+                        <profile id="eea8-f853-4407-bfd0" name="Land Raider (5-8 wounds)" hidden="false" typeId="800f-21d0-4387-c943" typeName="Unit">
+                        <characteristics>
+                            <characteristic name="M" typeId="0bdf-a96e-9e38-7779">5&quot;</characteristic>
+                            <characteristic name="WS" typeId="e7f0-1278-0250-df0c">6+</characteristic>
+                            <characteristic name="BS" typeId="381b-eb28-74c3-df5f">4+</characteristic>
+                            <characteristic name="S" typeId="2218-aa3c-265f-2939">8</characteristic>
+                            <characteristic name="T" typeId="9c9f-9774-a358-3a39">8</characteristic>
+                            <characteristic name="W" typeId="f330-5e6e-4110-0978">N/A</characteristic>
+                            <characteristic name="A" typeId="13fc-b29b-31f2-ab9f">D6</characteristic>
+                            <characteristic name="Ld" typeId="00ca-f8b8-876d-b705">9</characteristic>
+                            <characteristic name="Save" typeId="c0df-df94-abd7-e8d3">2+</characteristic>
+                        </characteristics>
+                        </profile>
+                        <profile id="3d93-5437-699b-1894" name="Land Raider (9+ wounds)" hidden="false" typeId="800f-21d0-4387-c943" typeName="Unit">
+                        <characteristics>
+                            <characteristic name="M" typeId="0bdf-a96e-9e38-7779">10&quot;</characteristic>
+                            <characteristic name="WS" typeId="e7f0-1278-0250-df0c">6+</characteristic>
+                            <characteristic name="BS" typeId="381b-eb28-74c3-df5f">3+</characteristic>
+                            <characteristic name="S" typeId="2218-aa3c-265f-2939">8</characteristic>
+                            <characteristic name="T" typeId="9c9f-9774-a358-3a39">8</characteristic>
+                            <characteristic name="W" typeId="f330-5e6e-4110-0978">16</characteristic>
+                            <characteristic name="A" typeId="13fc-b29b-31f2-ab9f">3</characteristic>
+                            <characteristic name="Ld" typeId="00ca-f8b8-876d-b705">9</characteristic>
+                            <characteristic name="Save" typeId="c0df-df94-abd7-e8d3">2+</characteristic>
+                        </characteristics>
+                        </profile>
+                    </profiles>
+                    <infoLinks>
+                        <infoLink id="fe5e-903d-e0ef-9fa8" name="Explodes (D6)" hidden="false" targetId="31de-fab0-5ddd-b01a" type="rule"/>
+                    </infoLinks>
+                    <categoryLinks>
+                        <categoryLink id="4ab8-9088-0be8-3ff1" name="New CategoryLink" hidden="false" targetId="31b6-b037-4c7a-f850" primary="false"/>
+                        <categoryLink id="0ba4-b7a5-6f4f-12a8" name="New CategoryLink" hidden="false" targetId="abf5fd55-9ac7-4263-8bc1-a9fb0a8fa6a6" primary="true"/>
+                        <categoryLink id="e852-0183-cb9d-3152" name="New CategoryLink" hidden="false" targetId="6cc4-1b62-8e8a-05cd" primary="false"/>
+                        <categoryLink id="4dbe-c0c8-5576-1cf8" name="New CategoryLink" hidden="false" targetId="c8fd-783f-3230-493e" primary="false"/>
+                        <categoryLink id="0b8a-0d75-63f5-d735" name="New CategoryLink" hidden="false" targetId="8897-680b-dbc0-0289" primary="false"/>
+                        <categoryLink id="977a-dfeb-6012-0422" name="Faction: Imperium" hidden="false" targetId="84e2-9fa9-ebe6-1d18" primary="false"/>
+                        <categoryLink id="6434-dffb-825e-47d0" name="Faction: Sanctic Astartes" hidden="false" targetId="bb46-a10a-ef92-c764" primary="false"/>
+                        <categoryLink id="d8fb-5bb2-a338-0c46" name="&lt;Brotherhood&gt;" hidden="false" targetId="4a9f-dcb0-00e7-1fcc" primary="false"/>
+                        <categoryLink id="613e-0b1b-4e95-e43b" name="Machine Spirit" hidden="false" targetId="04b2-68c7-14dd-c570" primary="false"/>
+                        <categoryLink id="e321-62bb-bc18-cd64" name="Smokescreen" hidden="false" targetId="737b-9264-8fdf-1156" primary="false"/>
+                    </categoryLinks>
+                    <selectionEntries>
+                        <selectionEntry id="dca2-1359-e6fb-0ff8" name="Twin Heavy Bolter" hidden="false" collective="false" import="true" type="upgrade">
+                        <constraints>
+                            <constraint field="selections" scope="parent" value="1.0" percentValue="false" shared="true" includeChildSelections="false" includeChildForces="false" id="fed4-2ceb-90d0-961a" type="min"/>
+                            <constraint field="selections" scope="parent" value="1.0" percentValue="false" shared="true" includeChildSelections="false" includeChildForces="false" id="8182-dcff-c5ad-ac39" type="max"/>
+                        </constraints>
+                        <infoLinks>
+                            <infoLink id="0428-32bd-e9a2-ed47" name="Twin Heavy Bolter" hidden="false" targetId="9629-35cc-5eb4-68fc" type="profile"/>
+                        </infoLinks>
+                        <costs>
+                            <cost name=" PL" typeId="e356-c769-5920-6e14" value="0.0"/>
+                            <cost name="CP" typeId="2d3b-b544-ad49-fb75" value="0.0"/>
+                            <cost name="pts" typeId="points" value="0.0"/>
+                        </costs>
+                        </selectionEntry>
+                        <selectionEntry id="52ef-9b74-1e5d-3109" name="Twin Lascannon" hidden="false" collective="false" import="true" type="upgrade">
+                        <constraints>
+                            <constraint field="selections" scope="parent" value="2.0" percentValue="false" shared="true" includeChildSelections="false" includeChildForces="false" id="8c4f-5a14-871d-16fb" type="min"/>
+                            <constraint field="selections" scope="parent" value="2.0" percentValue="false" shared="true" includeChildSelections="false" includeChildForces="false" id="bb7d-a7f2-d88e-264a" type="max"/>
+                        </constraints>
+                        <infoLinks>
+                            <infoLink id="0022-51fe-0f65-1d0c" name="New InfoLink" hidden="false" targetId="424e-5b5b-364e-033a" type="profile"/>
+                        </infoLinks>
+                        <costs>
+                            <cost name=" PL" typeId="e356-c769-5920-6e14" value="0.0"/>
+                            <cost name="CP" typeId="2d3b-b544-ad49-fb75" value="0.0"/>
+                            <cost name="pts" typeId="points" value="0.0"/>
+                        </costs>
+                        </selectionEntry>
+                        <selectionEntry id="51d7-84b9-79b0-1f21" name="Multi-melta" hidden="false" collective="false" import="true" type="upgrade">
+                        <constraints>
+                            <constraint field="selections" scope="parent" value="1.0" percentValue="false" shared="true" includeChildSelections="false" includeChildForces="false" id="54bb-deb6-3338-c55b" type="max"/>
+                        </constraints>
+                        <infoLinks>
+                            <infoLink id="2550-205e-c57e-4266" name="New InfoLink" hidden="false" targetId="5bc7-6e61-71d2-2163" type="profile"/>
+                        </infoLinks>
+                        <costs>
+                            <cost name=" PL" typeId="e356-c769-5920-6e14" value="0.0"/>
+                            <cost name="CP" typeId="2d3b-b544-ad49-fb75" value="0.0"/>
+                            <cost name="pts" typeId="points" value="0.0"/>
+                        </costs>
+                        </selectionEntry>
+                        <selectionEntry id="7319-677d-3d1b-a352" name="Storm Bolter" hidden="false" collective="false" import="true" type="upgrade">
+                        <constraints>
+                            <constraint field="selections" scope="parent" value="1.0" percentValue="false" shared="true" includeChildSelections="false" includeChildForces="false" id="3f3a-8061-ebe9-17e9" type="max"/>
+                        </constraints>
+                        <infoLinks>
+                            <infoLink id="8b53-4f63-b03c-b0a8" name="Storm bolter" hidden="false" targetId="505e-a5aa-edab-6d5b" type="profile"/>
+                        </infoLinks>
+                        <costs>
+                            <cost name=" PL" typeId="e356-c769-5920-6e14" value="0.0"/>
+                            <cost name="CP" typeId="2d3b-b544-ad49-fb75" value="0.0"/>
+                            <cost name="pts" typeId="points" value="0.0"/>
+                        </costs>
+                        </selectionEntry>
+                        <selectionEntry id="a0ed-6aec-4735-5c96" name="Hunter-killer Missile" hidden="false" collective="false" import="true" type="upgrade">
+                        <constraints>
+                            <constraint field="selections" scope="parent" value="1.0" percentValue="false" shared="true" includeChildSelections="false" includeChildForces="false" id="fc25-ce72-8dea-e12f" type="max"/>
+                        </constraints>
+                        <infoLinks>
+                            <infoLink id="c653-5599-c1b4-a3c8" name="New InfoLink" hidden="false" targetId="e2a9-e8fc-3a6b-2eec" type="profile"/>
+                        </infoLinks>
+                        <costs>
+                            <cost name=" PL" typeId="e356-c769-5920-6e14" value="0.0"/>
+                            <cost name="CP" typeId="2d3b-b544-ad49-fb75" value="0.0"/>
+                            <cost name="pts" typeId="points" value="0.0"/>
+                        </costs>
+                        </selectionEntry>
+                    </selectionEntries>
+                    <entryLinks>
+                        <entryLink id="792a-0eaf-822f-deba" name="Has Battle Honours (Chapter Approved 2018)" hidden="false" collective="false" import="true" targetId="4763-757f-499f-d998" type="selectionEntry"/>
+                    </entryLinks>
+                    <costs>
+                        <cost name=" PL" typeId="e356-c769-5920-6e14" value="14.0"/>
+                        <cost name="pts" typeId="points" value="245.0"/>
+                        <cost name="CP" typeId="2d3b-b544-ad49-fb75" value="0.0"/>
+                    </costs>
+                </selectionEntry>
+                <selectionEntry id="630a-1d50-0a37-a639" name="Kaldor Draigo" publicationId="28ec-711c-pubN78977" page="182" hidden="false" collective="false" import="true" type="unit">
+                    <constraints>
+                        <constraint field="selections" scope="roster" value="1.0" percentValue="false" shared="true" includeChildSelections="true" includeChildForces="true" id="2be2-fd1f-0903-8160" type="max"/>
+                    </constraints>
+                    <profiles>
+                        <profile id="1d3f-632c-2f50-0b89" name="Lord Kaldor Draigo" hidden="false" typeId="800f-21d0-4387-c943" typeName="Unit">
+                        <characteristics>
+                            <characteristic name="M" typeId="0bdf-a96e-9e38-7779">5&quot;</characteristic>
+                            <characteristic name="WS" typeId="e7f0-1278-0250-df0c">2+</characteristic>
+                            <characteristic name="BS" typeId="381b-eb28-74c3-df5f">2+</characteristic>
+                            <characteristic name="S" typeId="2218-aa3c-265f-2939">4</characteristic>
+                            <characteristic name="T" typeId="9c9f-9774-a358-3a39">4</characteristic>
+                            <characteristic name="W" typeId="f330-5e6e-4110-0978">7</characteristic>
+                            <characteristic name="A" typeId="13fc-b29b-31f2-ab9f">6</characteristic>
+                            <characteristic name="Ld" typeId="00ca-f8b8-876d-b705">9</characteristic>
+                            <characteristic name="Save" typeId="c0df-df94-abd7-e8d3">2+</characteristic>
+                        </characteristics>
+                        </profile>
+                        <profile id="6235-18e9-f81b-9686" name="Sanctum Sigilum" hidden="false" typeId="72c5eafc-75bf-4ed9-b425-78009f1efe82" typeName="Abilities">
+                        <characteristics>
+                            <characteristic name="Description" typeId="21befb24-fc85-4f52-a745-64b2e48f8228">This model has a 3+ invulnerable save</characteristic>
+                        </characteristics>
+                        </profile>
+                        <profile id="a7be-6bb0-44fb-78dd" name="Psyker" hidden="false" typeId="bc97-dea9-9e88-bb7d" typeName="Psyker">
+                        <characteristics>
+                            <characteristic name="Cast" typeId="5afb-9914-904b-d3b3">2</characteristic>
+                            <characteristic name="Deny" typeId="b5ac-9c20-5d5a-6f9b">2</characteristic>
+                            <characteristic name="Powers Known" typeId="69d7-b45e-00a2-7e46">3</characteristic>
+                            <characteristic name="Other" typeId="c2e2-f115-0003-5d7b">Smite</characteristic>
+                        </characteristics>
+                        </profile>
+                    </profiles>
+                    <infoLinks>
+                        <infoLink id="5d7e-a30a-5e24-499c" name="Smite" hidden="false" targetId="84d6-49a4-a9ff-162b" type="profile"/>
+                        <infoLink id="2ebd-3909-e123-cca4" name="Supreme Grand Master" hidden="false" targetId="0975-04aa-4a85-ef72" type="rule"/>
+                        <infoLink id="86f3-2423-f6ee-d95c" name="Teleport Strike" hidden="false" targetId="a29c-ad1e-441b-2167" type="rule"/>
+                        <infoLink id="484d-1f92-42d4-3785" name="Rites of Battle (Aura)" hidden="false" targetId="f836-3733-147c-9fb4" type="rule"/>
+                        <infoLink id="0df6-30aa-1750-1811" name="Knights of Titan" hidden="false" targetId="a26c-3bc4-cd1f-10bf" type="rule"/>
+                    </infoLinks>
+                    <categoryLinks>
+                        <categoryLink id="c0f0-9086-c653-45b0" name="New CategoryLink" hidden="false" targetId="848a6ff2-0def-4c72-8433-ff7da70e6bc7" primary="true"/>
+                        <categoryLink id="5dc6-226c-5676-0803" name="New CategoryLink" hidden="false" targetId="31b6-b037-4c7a-f850" primary="false"/>
+                        <categoryLink id="2f44-aa71-cfc1-9b56" name="New CategoryLink" hidden="false" targetId="e691-aad7-d21c-1023" primary="false"/>
+                        <categoryLink id="6493-652e-ab92-de36" name="New CategoryLink" hidden="false" targetId="3d52-fccf-10c0-3fae" primary="false"/>
+                        <categoryLink id="e510-d0eb-e3ea-7526" name="New CategoryLink" hidden="false" targetId="2821-762a-49dc-5a17" primary="false"/>
+                        <categoryLink id="7408-561d-08a2-7c47" name="New CategoryLink" hidden="false" targetId="d7f3-e85c-9e30-c44c" primary="false"/>
+                        <categoryLink id="1a6b-a791-e1c0-7c33" name="New CategoryLink" hidden="false" targetId="ef18-746a-369f-43a4" primary="false"/>
+                        <categoryLink id="6684-9ae1-0b79-c774" name="Faction: Imperium" hidden="false" targetId="84e2-9fa9-ebe6-1d18" primary="false"/>
+                        <categoryLink id="adf8-357a-399e-1289" name="Honoured Knight" hidden="false" targetId="736c-5b2d-201e-6df9" primary="false"/>
+                        <categoryLink id="e581-525c-7be1-eb37" name="Psyk-out Grenades" hidden="false" targetId="e08a-4705-eaae-e4c2" primary="false"/>
+                    </categoryLinks>
+                    <entryLinks>
+                        <entryLink id="bbad-f3d2-fb8f-1ccb" name="The Titansword" hidden="false" collective="false" import="true" targetId="f442-9be2-7fd2-2a94" type="selectionEntry">
+                        <constraints>
+                            <constraint field="selections" scope="parent" value="1.0" percentValue="false" shared="true" includeChildSelections="false" includeChildForces="false" id="efec-ad3a-7642-f674" type="max"/>
+                            <constraint field="selections" scope="parent" value="1.0" percentValue="false" shared="true" includeChildSelections="false" includeChildForces="false" id="a4db-cfa7-36a5-2bd4" type="min"/>
+                        </constraints>
+                        </entryLink>
+                        <entryLink id="20b0-c86b-8b73-267d" name="Master-crafted storm bolter" hidden="false" collective="false" import="true" targetId="5f78-3205-ec8a-c8ed" type="selectionEntry">
+                        <modifiers>
+                            <modifier type="set" field="points" value="0.0"/>
+                        </modifiers>
+                        <constraints>
+                            <constraint field="selections" scope="parent" value="1.0" percentValue="false" shared="true" includeChildSelections="false" includeChildForces="false" id="3f18-df94-3729-864b" type="max"/>
+                            <constraint field="selections" scope="parent" value="1.0" percentValue="false" shared="true" includeChildSelections="false" includeChildForces="false" id="0545-4f78-31aa-fd93" type="min"/>
+                        </constraints>
+                        </entryLink>
+                        <entryLink id="9d91-6a8e-2078-26b5" name="Frag &amp; Krak grenades" hidden="false" collective="false" import="true" targetId="cddf-945e-1335-e681" type="selectionEntry">
+                        <constraints>
+                            <constraint field="selections" scope="parent" value="1.0" percentValue="false" shared="true" includeChildSelections="false" includeChildForces="false" id="5412-4c34-f06d-9bd5" type="max"/>
+                            <constraint field="selections" scope="parent" value="1.0" percentValue="false" shared="true" includeChildSelections="false" includeChildForces="false" id="67f6-2dab-c1c4-37a5" type="min"/>
+                        </constraints>
+                        </entryLink>
+                        <entryLink id="73e9-1c85-bec0-56b1" name="Warlord" hidden="false" collective="false" import="true" targetId="2516-dd30-d80e-f79a" type="selectionEntry"/>
+                        <entryLink id="7b25-6e69-fe51-ec10" name="Grey Knight Warlord Trait" hidden="false" collective="false" import="true" targetId="87f6-76b7-a0d2-6b2c" type="selectionEntryGroup"/>
+                        <entryLink id="e2c6-8442-d58b-64f9" name="Dominus Discipline" hidden="false" collective="false" import="true" targetId="f16b-4fb0-c9d1-7469" type="selectionEntryGroup">
+                        <constraints>
+                            <constraint field="selections" scope="parent" value="3.0" percentValue="false" shared="true" includeChildSelections="false" includeChildForces="false" id="8124-119c-a203-6c3a" type="max"/>
+                        </constraints>
+                        </entryLink>
+                        <entryLink id="870a-dea1-5df2-79e0" name="Shield of Humanity" hidden="false" collective="false" import="true" targetId="77cb-2eca-58ad-5616" type="selectionEntry"/>
+                        <entryLink id="223c-fc27-1356-e8cd" name="Stratagem: Warlord Trait" hidden="false" collective="false" import="true" targetId="6771-6ab3-1672-6a39" type="selectionEntry"/>
+                    </entryLinks>
+                    <costs>
+                        <cost name=" PL" typeId="e356-c769-5920-6e14" value="9.0"/>
+                        <cost name="pts" typeId="points" value="165.0"/>
+                        <cost name="CP" typeId="2d3b-b544-ad49-fb75" value="0.0"/>
+                    </costs>
+                </selectionEntry>
+            </sharedSelectionEntries>    
+        </catalogue>
+    """
+    expected_output = [
+        {"name":"Kaldor Draigo","M":"5\"","WS":"2+","BS":"2+","S":"4","T":"4","W":"7","A":"6","Ld":"9","Save":"2+","pts":"165.0"},
+        {"name":"Land Raider","M":"10\"","WS":"6+","BS":"3+","S":"8","T":"8","W":"16","A":"3","Ld":"9","Save":"2+","pts":"245.0"}
+        ]
+    root = ET.fromstring(test_xml)
+    namespace = root.tag.split("}")[0]+"}"
+    firstSelectionEntry = root.find(".//*[@id='{target_id}']".format(target_id = '630a-1d50-0a37-a639'))
+    secondSelectionEntry = root.find(".//*[@id='{target_id}']".format(target_id = '5a45-57d9-82b8-a715'))
+    
+    received_output = bse.SelectionEntryUnitExtractor(firstSelectionEntry,namespace,root) + bse.SelectionEntryUnitExtractor(secondSelectionEntry,namespace,root)
+    assert expected_output == received_output
