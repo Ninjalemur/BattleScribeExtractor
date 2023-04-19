@@ -12,6 +12,7 @@ def test_ModelExtractor():
         <catalogue id="0cc2-3545-6762-a3f7" name="Imperium - Grey Knights" revision="116" battleScribeVersion="2.03" authorName="BSData Developers" authorContact="@Tekton" authorUrl="https://www.bsdata.net/contact" library="false" gameSystemId="28ec-711c-d87f-3aeb" gameSystemRevision="238" xmlns="http://www.battlescribe.net/schema/catalogueSchema">
             <entryLinks>
                 <entryLink id="0244-9f38-1f40-4689" name="Strike Squad" hidden="false" collective="false" import="true" targetId="e012-a289-720d-a36c" type="selectionEntry"/>
+                <entryLink id="6cb7-4e4d-9811-a18f" name="Brother-Captain" hidden="false" collective="false" import="true" targetId="f4b7-6f8e-448d-9c3b" type="selectionEntry"/>
             </entryLinks>
             <sharedSelectionEntries>
                 <selectionEntry id="e012-a289-720d-a36c" name="Strike Squad" hidden="false" collective="false" import="true" type="unit">
@@ -298,7 +299,160 @@ def test_ModelExtractor():
                         <cost name="pts" typeId="points" value="20.0"/>
                         <cost name="CP" typeId="2d3b-b544-ad49-fb75" value="0.0"/>
                     </costs>
-                    </selectionEntry>
+                </selectionEntry>
+                <selectionEntry id="f4b7-6f8e-448d-9c3b" name="Brother-Captain" hidden="false" collective="false" import="true" type="model">
+                    <profiles>
+                        <profile id="6cf3-e6f1-4e1f-8ff5" name="Brother Captain" hidden="false" typeId="800f-21d0-4387-c943" typeName="Unit">
+                        <characteristics>
+                            <characteristic name="M" typeId="0bdf-a96e-9e38-7779">5&quot;</characteristic>
+                            <characteristic name="WS" typeId="e7f0-1278-0250-df0c">2+</characteristic>
+                            <characteristic name="BS" typeId="381b-eb28-74c3-df5f">2+</characteristic>
+                            <characteristic name="S" typeId="2218-aa3c-265f-2939">4</characteristic>
+                            <characteristic name="T" typeId="9c9f-9774-a358-3a39">4</characteristic>
+                            <characteristic name="W" typeId="f330-5e6e-4110-0978">6</characteristic>
+                            <characteristic name="A" typeId="13fc-b29b-31f2-ab9f">5</characteristic>
+                            <characteristic name="Ld" typeId="00ca-f8b8-876d-b705">9</characteristic>
+                            <characteristic name="Save" typeId="c0df-df94-abd7-e8d3">2+</characteristic>
+                        </characteristics>
+                        </profile>
+                    </profiles>
+                    <infoLinks>
+                        <infoLink id="8121-0606-ef1f-48a6" name="Teleport Strike" hidden="false" targetId="a29c-ad1e-441b-2167" type="rule"/>
+                        <infoLink id="9e94-85fa-d140-7733" name="Psyker" hidden="false" targetId="100e-a5f5-4af4-8c40" type="profile"/>
+                        <infoLink id="6127-962c-21f8-7ebb" name="Knights of Titan" hidden="false" targetId="a26c-3bc4-cd1f-10bf" type="rule"/>
+                        <infoLink id="86a5-52b6-0a4a-e3c7" name="Tactical Precision (Aura)" hidden="false" targetId="9cc9-13ac-646b-713e" type="profile"/>
+                        <infoLink id="ebeb-4871-eaf7-af57" name="Smite" hidden="false" targetId="84d6-49a4-a9ff-162b" type="profile"/>
+                    </infoLinks>
+                    <categoryLinks>
+                        <categoryLink id="83c5-d3a7-b4a1-8436" name="New CategoryLink" hidden="false" targetId="848a6ff2-0def-4c72-8433-ff7da70e6bc7" primary="true"/>
+                        <categoryLink id="fe67-6682-1620-efe8" name="New CategoryLink" hidden="false" targetId="31b6-b037-4c7a-f850" primary="false"/>
+                        <categoryLink id="31db-41cd-6eee-725a" name="New CategoryLink" hidden="false" targetId="ef18-746a-369f-43a4" primary="false"/>
+                        <categoryLink id="cc38-e292-1b54-d321" name="New CategoryLink" hidden="false" targetId="15f0-19f4-d5b2-9102" primary="false"/>
+                        <categoryLink id="bb37-9d1f-c6d6-aa9d" name="New CategoryLink" hidden="false" targetId="84e2-9fa9-ebe6-1d18" primary="false"/>
+                        <categoryLink id="92a1-05eb-b087-56d2" name="New CategoryLink" hidden="false" targetId="3d52-fccf-10c0-3fae" primary="false"/>
+                        <categoryLink id="39a1-84b9-f313-1504" name="New CategoryLink" hidden="false" targetId="e691-aad7-d21c-1023" primary="false"/>
+                        <categoryLink id="d450-3887-a797-6ac7" name="New CategoryLink" hidden="false" targetId="2821-762a-49dc-5a17" primary="false"/>
+                        <categoryLink id="61fd-154d-12b5-801d" name="&lt;Brotherhood&gt;" hidden="false" targetId="4a9f-dcb0-00e7-1fcc" primary="false"/>
+                        <categoryLink id="bcc3-47cd-4b29-8fff" name="Psyk-out Grenades" hidden="false" targetId="e08a-4705-eaae-e4c2" primary="false"/>
+                    </categoryLinks>
+                    <selectionEntries>
+                        <selectionEntry id="a7bd-111b-edbd-4e2d" name="Brother-Captain" hidden="false" collective="false" import="true" type="upgrade">
+                        <modifiers>
+                            <modifier type="add" field="category" value="dc07-cdfa-1d32-bb8b">
+                            <conditions>
+                                <condition field="selections" scope="force" value="0.0" percentValue="false" shared="true" includeChildSelections="true" includeChildForces="true" childId="d69e-d595-c0ac-b7be" type="greaterThan"/>
+                            </conditions>
+                            </modifier>
+                            <modifier type="add" field="category" value="dc07-cdfa-1d32-bb8y">
+                            <conditions>
+                                <condition field="selections" scope="force" value="0.0" percentValue="false" shared="true" includeChildSelections="true" includeChildForces="true" childId="1be0-f4dd-1f6b-486e" type="greaterThan"/>
+                            </conditions>
+                            </modifier>
+                            <modifier type="add" field="category" value="dc07-cdfa-1d32-bb82">
+                            <conditions>
+                                <condition field="selections" scope="force" value="0.0" percentValue="false" shared="true" includeChildSelections="true" includeChildForces="true" childId="73e8-6b6b-b1d2-ef9c" type="greaterThan"/>
+                            </conditions>
+                            </modifier>
+                            <modifier type="add" field="category" value="dc07-cdfa-1d32-bb86">
+                            <conditions>
+                                <condition field="selections" scope="force" value="0.0" percentValue="false" shared="true" includeChildSelections="true" includeChildForces="true" childId="1812-4aba-98d5-cd3f" type="greaterThan"/>
+                            </conditions>
+                            </modifier>
+                            <modifier type="add" field="category" value="dc07-cdfa-1d32-bb84">
+                            <conditions>
+                                <condition field="selections" scope="force" value="0.0" percentValue="false" shared="true" includeChildSelections="true" includeChildForces="true" childId="2f86-5489-d689-5435" type="greaterThan"/>
+                            </conditions>
+                            </modifier>
+                            <modifier type="add" field="category" value="dc07-cdfa-1d32-bb80">
+                            <conditions>
+                                <condition field="selections" scope="force" value="0.0" percentValue="false" shared="true" includeChildSelections="true" includeChildForces="true" childId="cccd-a8ea-e301-34fb" type="greaterThan"/>
+                            </conditions>
+                            </modifier>
+                            <modifier type="add" field="category" value="7bb9-e306-4cce-f09u">
+                            <conditions>
+                                <condition field="selections" scope="force" value="0.0" percentValue="false" shared="true" includeChildSelections="true" includeChildForces="true" childId="f7b6-e2c6-94c9-8327" type="greaterThan"/>
+                            </conditions>
+                            </modifier>
+                            <modifier type="add" field="category" value="dc07-cdfa-1d32-bb88">
+                            <conditions>
+                                <condition field="selections" scope="force" value="0.0" percentValue="false" shared="true" includeChildSelections="true" includeChildForces="true" childId="68e8-4053-6e4e-6afb" type="greaterThan"/>
+                            </conditions>
+                            </modifier>
+                        </modifiers>
+                        <constraints>
+                            <constraint field="selections" scope="parent" value="1.0" percentValue="false" shared="true" includeChildSelections="false" includeChildForces="false" id="74de-1a9c-1f4e-bd6d" type="min"/>
+                            <constraint field="selections" scope="parent" value="1.0" percentValue="false" shared="true" includeChildSelections="false" includeChildForces="false" id="4cae-dc95-249d-50ea" type="max"/>
+                        </constraints>
+                        <costs>
+                            <cost name=" PL" typeId="e356-c769-5920-6e14" value="0.0"/>
+                            <cost name="CP" typeId="2d3b-b544-ad49-fb75" value="0.0"/>
+                            <cost name="pts" typeId="points" value="0.0"/>
+                        </costs>
+                        </selectionEntry>
+                    </selectionEntries>
+                    <entryLinks>
+                        <entryLink id="6e9f-1798-d767-7367" name="Frag &amp; Krak grenades" hidden="false" collective="false" import="true" targetId="cddf-945e-1335-e681" type="selectionEntry">
+                        <constraints>
+                            <constraint field="selections" scope="parent" value="1.0" percentValue="false" shared="true" includeChildSelections="false" includeChildForces="false" id="3eb2-c724-82cc-df0f" type="max"/>
+                            <constraint field="selections" scope="parent" value="1.0" percentValue="false" shared="true" includeChildSelections="false" includeChildForces="false" id="db0c-db54-ce0c-3e84" type="min"/>
+                        </constraints>
+                        </entryLink>
+                        <entryLink id="bc0a-bb1f-fd2b-7008" name="Iron Halo" hidden="false" collective="false" import="true" targetId="1191-4e05-aba4-b4fc" type="selectionEntry">
+                        <constraints>
+                            <constraint field="selections" scope="parent" value="1.0" percentValue="false" shared="true" includeChildSelections="false" includeChildForces="false" id="b951-43fc-fc99-e539" type="max"/>
+                            <constraint field="selections" scope="parent" value="1.0" percentValue="false" shared="true" includeChildSelections="false" includeChildForces="false" id="d13d-090c-7420-c26a" type="min"/>
+                        </constraints>
+                        </entryLink>
+                        <entryLink id="fca5-b18b-2b0c-2450" name="Brother Captain Melee Weapons" hidden="false" collective="false" import="true" targetId="942d-b10a-8cc5-3854" type="selectionEntryGroup">
+                        <modifiers>
+                            <modifier type="set" field="hidden" value="true">
+                            <conditions>
+                                <condition field="selections" scope="parent" value="0.0" percentValue="false" shared="true" includeChildSelections="true" includeChildForces="true" childId="0d9e-a687-c64e-9dc5" type="instanceOf"/>
+                            </conditions>
+                            </modifier>
+                        </modifiers>
+                        </entryLink>
+                        <entryLink id="3a9d-11a3-7f4f-0e5a" name="Grey Knight Relics" hidden="false" collective="false" import="true" targetId="c779-4f85-7bfa-aad3" type="selectionEntryGroup"/>
+                        <entryLink id="1757-2792-13ae-afa5" name="Warlord" hidden="false" collective="false" import="true" targetId="2516-dd30-d80e-f79a" type="selectionEntry"/>
+                        <entryLink id="144b-83ab-b7d0-f298" name="Grey Knight Warlord Trait" hidden="false" collective="false" import="true" targetId="87f6-76b7-a0d2-6b2c" type="selectionEntryGroup">
+                        <profiles>
+                            <profile id="a92d-87cc-a19b-55c2" name="Grey Knight Warlord Trait" hidden="false" typeId="800f-21d0-4387-c943" typeName="Unit">
+                            <characteristics>
+                                <characteristic name="M" typeId="0bdf-a96e-9e38-7779"/>
+                                <characteristic name="WS" typeId="e7f0-1278-0250-df0c"/>
+                                <characteristic name="BS" typeId="381b-eb28-74c3-df5f"/>
+                                <characteristic name="S" typeId="2218-aa3c-265f-2939"/>
+                                <characteristic name="T" typeId="9c9f-9774-a358-3a39"/>
+                                <characteristic name="W" typeId="f330-5e6e-4110-0978"/>
+                                <characteristic name="A" typeId="13fc-b29b-31f2-ab9f"/>
+                                <characteristic name="Ld" typeId="00ca-f8b8-876d-b705"/>
+                                <characteristic name="Save" typeId="c0df-df94-abd7-e8d3"/>
+                            </characteristics>
+                            </profile>
+                        </profiles>
+                        </entryLink>
+                        <entryLink id="9524-c591-9de7-533d" name="Wisdom of the Prognosticators" hidden="false" collective="false" import="true" targetId="8c0d-a0b7-aa65-a1de" type="selectionEntryGroup">
+                        <constraints>
+                            <constraint field="selections" scope="parent" value="1.0" percentValue="false" shared="true" includeChildSelections="false" includeChildForces="false" id="3064-64cf-b3e9-92ae" type="max"/>
+                        </constraints>
+                        </entryLink>
+                        <entryLink id="149a-15e9-9752-3ccd" name="Dominus Discipline" hidden="false" collective="false" import="true" targetId="f16b-4fb0-c9d1-7469" type="selectionEntryGroup">
+                        <constraints>
+                            <constraint field="selections" scope="parent" value="1.0" percentValue="false" shared="true" includeChildSelections="false" includeChildForces="false" id="b0cf-b9a5-1320-3611" type="max"/>
+                        </constraints>
+                        </entryLink>
+                        <entryLink id="b342-9e39-3ef6-f8ae" name="Character Ranged Weapons" hidden="false" collective="false" import="true" targetId="ae47-9014-02a8-8add" type="selectionEntryGroup"/>
+                        <entryLink id="5432-56d9-a4b8-9a29" name="Shield of Humanity" hidden="false" collective="false" import="true" targetId="77cb-2eca-58ad-5616" type="selectionEntry"/>
+                        <entryLink id="0467-84c4-6f63-a16a" name="Brotherhood Psyker Power" hidden="false" collective="false" import="true" targetId="d6ae-fe14-202c-6351" type="selectionEntry"/>
+                        <entryLink id="a54b-0a12-5060-4733" name="Exemplar of the Silver Host" hidden="false" collective="false" import="true" targetId="c600-ecd5-4877-8d99" type="selectionEntry"/>
+                        <entryLink id="1360-38d3-3c5a-1840" name="Stratagem: Warlord Trait" hidden="false" collective="false" import="true" targetId="6771-6ab3-1672-6a39" type="selectionEntry"/>
+                    </entryLinks>
+                    <costs>
+                        <cost name="pts" typeId="points" value="100.0"/>
+                        <cost name=" PL" typeId="e356-c769-5920-6e14" value="6.0"/>
+                        <cost name="CP" typeId="2d3b-b544-ad49-fb75" value="0.0"/>
+                    </costs>
+                </selectionEntry>
             </sharedSelectionEntries>
             <sharedProfiles>
                 <profile id="1037-1f6f-bee5-b1ea" name="Grey Knight" hidden="false" typeId="800f-21d0-4387-c943" typeName="Unit">
@@ -328,7 +482,8 @@ def test_ModelExtractor():
             {"name":"Grey Knight (Incinerator)","M":"6\"","WS":"3+","BS":"3+","S":"4","T":"4","W":"2","A":"3","Ld":"7","Save":"3+","pts":"20.0"},
             {"name":"Grey Knight (Psycannon)","M":"6\"","WS":"3+","BS":"3+","S":"4","T":"4","W":"2","A":"3","Ld":"7","Save":"3+","pts":"20.0"},
             {"name":"Grey Knight (Psilencer)","M":"6\"","WS":"3+","BS":"3+","S":"4","T":"4","W":"2","A":"3","Ld":"7","Save":"3+","pts":"20.0"},
-            {"name":"Grey Knight Justicar","M":"6\"","WS":"3+","BS":"3+","S":"4","T":"4","W":"2","A":"4","Ld":"8","Save":"3+","pts":"20.0"}
+            {"name":"Grey Knight Justicar","M":"6\"","WS":"3+","BS":"3+","S":"4","T":"4","W":"2","A":"4","Ld":"8","Save":"3+","pts":"20.0"},
+            {"name":"Brother-Captain","M":"5\"","WS":"2+","BS":"2+","S":"4","T":"4","W":"6","A":"5","Ld":"9","Save":"2+","pts":"100.0"}
         ]
     )
     root = ET.fromstring(test_xml)

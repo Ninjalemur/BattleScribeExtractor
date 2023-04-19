@@ -159,10 +159,10 @@ def SelectionEntryUnitExtractor(
                 profile_stats_to_get,
                 points_string,
                 nullValue)
-    print("initial selection extration")
-    print(selectionEntry_profile)
-    if selectionEntry_profile == None:
-        print("direct model extraction failed")
+    # print("initial selection extration")
+    # print(selectionEntry_profile)
+    # if selectionEntry_profile == None:
+        # print("direct model extraction failed")
     if selectionEntry_profile != None:
         collated_profile_stats.append(selectionEntry_profile)
 
@@ -288,7 +288,7 @@ def ProfileExtractor(
     if profile.attrib["typeName"] == "Unit":
         profile_stats = {}
         unitName = profile.attrib["name"]
-        print("Model name: "+unitName)
+        # print("Model name: "+unitName)
         profile_stats['name']= unitName
 
         recorded_stats = {}
