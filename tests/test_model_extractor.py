@@ -6,14 +6,12 @@ def test_ModelExtractor():
     """
     Test that ModelExtractor correctly extracts Model data from root element
 
-    Ensures that sharedProfiles > profile > characteristics path is extracted, but not others
+    Ensures that all items listed in sharedSelectionEntries are extracted. Requires that SelectionEntryUnitExtractor, SelectionEntryModelExtractor, ProfileExtractor are working correctly.
+
+    Note that the Justicar in the test data is extracted twice as it appears as its own SelectionEntry as well as within the Strike Squad SelectionEntry. This is ok, since FolderExtractor will remove duplicates before writing to file.
     """
     test_xml = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
         <catalogue id="0cc2-3545-6762-a3f7" name="Imperium - Grey Knights" revision="116" battleScribeVersion="2.03" authorName="BSData Developers" authorContact="@Tekton" authorUrl="https://www.bsdata.net/contact" library="false" gameSystemId="28ec-711c-d87f-3aeb" gameSystemRevision="238" xmlns="http://www.battlescribe.net/schema/catalogueSchema">
-            <entryLinks>
-                <entryLink id="0244-9f38-1f40-4689" name="Strike Squad" hidden="false" collective="false" import="true" targetId="e012-a289-720d-a36c" type="selectionEntry"/>
-                <entryLink id="6cb7-4e4d-9811-a18f" name="Brother-Captain" hidden="false" collective="false" import="true" targetId="f4b7-6f8e-448d-9c3b" type="selectionEntry"/>
-            </entryLinks>
             <sharedSelectionEntries>
                 <selectionEntry id="e012-a289-720d-a36c" name="Strike Squad" hidden="false" collective="false" import="true" type="unit">
                     <modifiers>
@@ -482,6 +480,7 @@ def test_ModelExtractor():
             {"name":"Grey Knight (Incinerator)","M":"6\"","WS":"3+","BS":"3+","S":"4","T":"4","W":"2","A":"3","Ld":"7","Save":"3+","pts":"20.0"},
             {"name":"Grey Knight (Psycannon)","M":"6\"","WS":"3+","BS":"3+","S":"4","T":"4","W":"2","A":"3","Ld":"7","Save":"3+","pts":"20.0"},
             {"name":"Grey Knight (Psilencer)","M":"6\"","WS":"3+","BS":"3+","S":"4","T":"4","W":"2","A":"3","Ld":"7","Save":"3+","pts":"20.0"},
+            {"name":"Grey Knight Justicar","M":"6\"","WS":"3+","BS":"3+","S":"4","T":"4","W":"2","A":"4","Ld":"8","Save":"3+","pts":"20.0"},
             {"name":"Grey Knight Justicar","M":"6\"","WS":"3+","BS":"3+","S":"4","T":"4","W":"2","A":"4","Ld":"8","Save":"3+","pts":"20.0"},
             {"name":"Brother-Captain","M":"5\"","WS":"2+","BS":"2+","S":"4","T":"4","W":"6","A":"5","Ld":"9","Save":"2+","pts":"100.0"}
         ]

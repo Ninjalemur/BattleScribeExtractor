@@ -104,21 +104,32 @@ def ModelExtractor(
 
     
     collated_profile_stats =[]
-    for entryLinks in root_element.findall(namespace+'entryLinks'):
-        for entryLink in entryLinks.findall(namespace+'entryLink'):
-            # print("checking entryLink: "+entryLink.attrib["name"])
-            target_id = entryLink.attrib["targetId"]
-            ref = root_element.find(".//*[@id='{target_id}']".format(target_id = target_id))
-            if ref == None:
-                # print("No reference found for entryLink: "+entryLink.attrib["name"])
-                continue
-            elif ref.attrib.get("type") == None:
-                continue
-            elif ref.attrib["type"] != "unit" and ref.attrib["type"] != "model":
-                # print("entryLink: "+entryLink.attrib["name"]+" is neither a unit nor a model")
+    for sharedSelectionEntries in root_element.findall(namespace+'sharedSelectionEntries'):
+        for selectionEntry in sharedSelectionEntries.findall(namespace+'selectionEntry'):
+            # print("checking selectionEntry: "+selectionEntry.attrib["name"])
+            if selectionEntry.attrib["type"] != "unit" and selectionEntry.attrib["type"] != "model":
+                # print("selectionEntry: "+selectionEntry.attrib["name"]+" is neither a unit nor a model")
                 continue
             else:
-                collated_profile_stats += SelectionEntryUnitExtractor(ref,namespace,root_element,profile_stats_to_get,points_string,nullValue)
+                collated_profile_stats += SelectionEntryUnitExtractor(selectionEntry,namespace,root_element,profile_stats_to_get,points_string,nullValue)
+
+    
+    # for entryLinks in root_element.findall(namespace+'entryLinks'):
+    #     for entryLink in entryLinks.findall(namespace+'entryLink'):
+    #         # print("checking entryLink: "+entryLink.attrib["name"])
+    #         target_id = entryLink.attrib["targetId"]
+    #         ref = root_element.find(".//*[@id='{target_id}']".format(target_id = target_id))
+    #         if ref == None:
+    #             # print("No reference found for entryLink: "+entryLink.attrib["name"])
+    #             continue
+    #         elif ref.attrib.get("type") == None:
+    #             continue
+    #         elif ref.attrib["type"] != "unit" and ref.attrib["type"] != "model":
+    #             # print("entryLink: "+entryLink.attrib["name"]+" is neither a unit nor a model")
+    #             continue
+    #         else:
+    #             collated_profile_stats += SelectionEntryUnitExtractor(ref,namespace,root_element,profile_stats_to_get,points_string,nullValue)
+
     return(pd.DataFrame.from_records(collated_profile_stats))
 
 def SelectionEntryUnitExtractor(
