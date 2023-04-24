@@ -1174,7 +1174,7 @@ def test_WeaponExtractor():
 
 def test_SelectionEntryModelExtractor_DamageTrack():
     """
-    Test that SelectionEntryModelExtractor extracts the highest damage track profile for units with damage tracks. Ignores profiles with "N/A" in wounds field. Requires ProfileExtractor to be working correctly.
+    Test that SelectionEntryModelExtractor extracts the highest damage track profile for units with damage tracks by ignoring profiles with "N/A" in wounds field. Requires ProfileExtractor to be working correctly.
     """
     test_xml = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
         <catalogue id="0cc2-3545-6762-a3f7" name="Imperium - Grey Knights" revision="116" battleScribeVersion="2.03" authorName="BSData Developers" authorContact="@Tekton" authorUrl="https://www.bsdata.net/contact" library="false" gameSystemId="28ec-711c-d87f-3aeb" gameSystemRevision="238" xmlns="http://www.battlescribe.net/schema/catalogueSchema">
@@ -1422,3 +1422,4 @@ def test_SelectionEntryModelExtractor_DamageTrack():
     
     received_output = bse.SelectionEntryUnitExtractor(firstSelectionEntry,namespace,root) + bse.SelectionEntryUnitExtractor(secondSelectionEntry,namespace,root)
     assert expected_output == received_output
+
