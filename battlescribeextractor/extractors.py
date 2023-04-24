@@ -363,7 +363,30 @@ def WeaponExtractor(
     return(pd.DataFrame.from_records(collated_profile_stats))
 
 
-                
+def WeaponCostExtractor(
+    root_element,
+    nullValue = "0.0"
+    ):
+    """
+    Extracts weapon cost data from an XML Elements object and returns it as a DataFrame.
+
+    Flow of extraction:
+    1. model level. Note down model id
+    2. check entryLinks of model
+    3. check costs of entryLinks
+    4. follow each entryLink
+    5. get cost in pts
+    6. check modifiers
+    7. for each modifier, apply cost modifer if condition or conditiongroup is met
+
+
+    Parameters:
+        root_element : xml root object
+            xml root object from etree
+        nullValue : any
+            value to use if value for characteristic is not found
+    """
+    pass
             
     
             
